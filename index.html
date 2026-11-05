@@ -12,6 +12,7 @@
             --card-bg: #FFFFFF;
             --text: #1F2937;
             --border: #E5E7EB;
+            --success: #10B981;
         }
 
         body {
@@ -41,15 +42,15 @@
         }
 
         .container {
-            width: 90%;
-            max-width: 600px;
-            margin: 1.5rem auto;
+            width: 92%;
+            max-width: 650px;
+            margin: 1.2rem auto;
         }
 
         .nav-tabs {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem;
             background: #E2E8F0;
             border-radius: 8px;
             padding: 4px;
@@ -74,7 +75,7 @@
         .card {
             background: var(--card-bg);
             border-radius: 10px;
-            padding: 1.5rem;
+            padding: 1.25rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 1.5rem;
             display: none;
@@ -136,6 +137,93 @@
 
         button:hover {
             opacity: 0.9;
+        }
+
+        /* Lift Section Styling */
+        .exercise-card {
+            background: #F8FAFC;
+            border: 1px solid #CBD5E1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 1.2rem;
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+        }
+
+        .exercise-title {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.05rem;
+        }
+
+        .exercise-meta {
+            font-size: 0.8rem;
+            color: #64748B;
+            background: #E2E8F0;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .set-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .set-row.completed {
+            background: #F0FDF4;
+            border-color: #A7F3D0;
+        }
+
+        .set-label {
+            font-weight: bold;
+            font-size: 0.85rem;
+            width: 50px;
+        }
+
+        .set-input-group {
+            flex: 1;
+            display: flex;
+            gap: 4px;
+        }
+
+        .set-input-group input {
+            padding: 6px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .set-check {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .rest-timer-btn {
+            background: #475569;
+            font-size: 0.8rem;
+            padding: 6px;
+            margin-top: 6px;
+            border-radius: 4px;
+        }
+
+        .timer-display {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-left: 8px;
         }
 
         .status-msg {
@@ -292,102 +380,82 @@
             <div id="testingStatus" class="status-msg"></div>
         </div>
 
-        <!-- 3. Daily Workout Logger -->
+        <!-- 3. Interactive Full Workout Logger -->
         <div id="workout" class="card">
-            <h2>Daily Workout Set Logger</h2>
-            <form id="workoutForm">
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label for="logName">Athlete Name</label>
-                        <select id="logName" required>
-                            <option value="">Loading players...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="logDate">Date</label>
-                        <input type="date" id="logDate" required>
-                    </div>
-                </div>
-
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label for="logPhase">Phase</label>
-                        <select id="logPhase" required>
-                            <option value="Phase 1">Phase 1</option>
-                            <option value="Phase 2">Phase 2</option>
-                            <option value="Phase 3">Phase 3</option>
-                            <option value="In-Season">In-Season</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="logWeek">Week</label>
-                        <input type="number" id="logWeek" min="1" max="8" value="1" required>
-                    </div>
-                </div>
-
+            <h2>Daily Workout Session Logger</h2>
+            
+            <div class="inline-group">
                 <div class="form-group">
-                    <label for="logLift">Lift Performed</label>
-                    <select id="logLift" required>
-                        <option value="Trap Bar Deadlift">Trap Bar Deadlift</option>
-                        <option value="Squat">Squat</option>
-                        <option value="Bench Press">Bench Press</option>
-                        <option value="Hang Clean">Hang Clean</option>
-                        <option value="Landmine Press">Landmine Press</option>
+                    <label for="logName">Athlete Name</label>
+                    <select id="logName" required>
+                        <option value="">Loading players...</option>
                     </select>
                 </div>
-
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label for="prescribedLoad">Prescribed Load (lbs)</label>
-                        <input type="number" id="prescribedLoad" placeholder="200">
-                    </div>
-                    <div class="form-group">
-                        <label for="actualLoad">Actual Load (lbs)</label>
-                        <input type="number" id="actualLoad" required placeholder="205">
-                    </div>
-                </div>
-
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label for="targetVbt">Target VBT (m/s)</label>
-                        <input type="number" step="0.01" id="targetVbt" placeholder="0.50">
-                    </div>
-                    <div class="form-group">
-                        <label for="actualVbt">Actual VBT (m/s)</label>
-                        <input type="number" step="0.01" id="actualVbt" required placeholder="0.48">
-                    </div>
-                </div>
-
-                <div class="inline-group">
-                    <div class="form-group">
-                        <label for="logRpe">RPE (1-10)</label>
-                        <input type="number" min="1" max="10" id="logRpe" required placeholder="8">
-                    </div>
-                    <div class="form-group">
-                        <label for="cleanTech">Clean Tech?</label>
-                        <select id="cleanTech" required>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                </div>
-
                 <div class="form-group">
-                    <label for="logNotes">Notes</label>
-                    <textarea id="logNotes" rows="2" placeholder="Bar felt fast, good hip drive..."></textarea>
+                    <label for="logDate">Date</label>
+                    <input type="date" id="logDate" required>
                 </div>
+            </div>
 
-                <button type="submit">Log Workout Set</button>
-            </form>
+            <div class="inline-group">
+                <div class="form-group">
+                    <label for="logPhase">Phase</label>
+                    <select id="logPhase" onchange="renderWorkoutProgram()">
+                        <option value="Phase 1">Phase 1 (Foundation)</option>
+                        <option value="Phase 2">Phase 2 (Max Strength)</option>
+                        <option value="Phase 3">Phase 3 (Speed & Power)</option>
+                        <option value="In-Season">In-Season (Maintenance)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="logWeek">Week</label>
+                    <input type="number" id="logWeek" min="1" max="8" value="1" required>
+                </div>
+            </div>
+
+            <!-- Dynamic Workout Lift Cards -->
+            <div id="workoutContainer"></div>
+
+            <button type="button" onclick="submitFullWorkout()">Submit Full Workout Session</button>
             <div id="workoutStatus" class="status-msg"></div>
         </div>
     </div>
 
     <script>
-        // Hardcoded Google Apps Script Web App Endpoint
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrYRiNlzbXWbnEODS9ecwXWv41WxhinaStCIzf28XTRk9Xt3P4FIe60WhKyWHTgV06/exec";
 
-        // Set today's date safely
+        // Program Prescriptions per Phase
+        const PHASE_PROGRAMS = {
+            "Phase 1": [
+                { name: "Trap Bar Deadlift", sets: 4, reps: 8, vbt: "0.40–0.60 m/s", rest: 120 },
+                { name: "Squat", sets: 4, reps: 8, vbt: "0.40–0.60 m/s", rest: 120 },
+                { name: "Bench Press", sets: 4, reps: 8, vbt: "0.40–0.60 m/s", rest: 90 },
+                { name: "Hang Clean", sets: 4, reps: 4, vbt: "0.45–0.55 m/s", rest: 150 },
+                { name: "Landmine Press", sets: 4, reps: 8, vbt: "0.45–0.60 m/s", rest: 90 }
+            ],
+            "Phase 2": [
+                { name: "Trap Bar Deadlift", sets: 5, reps: 5, vbt: "0.30–0.50 m/s", rest: 180 },
+                { name: "Squat", sets: 5, reps: 5, vbt: "0.30–0.50 m/s", rest: 180 },
+                { name: "Bench Press", sets: 5, reps: 5, vbt: "0.30–0.50 m/s", rest: 150 },
+                { name: "Hang Clean", sets: 4, reps: 3, vbt: "0.60–0.75 m/s", rest: 180 },
+                { name: "Landmine Press", sets: 4, reps: 5, vbt: "0.40–0.55 m/s", rest: 120 }
+            ],
+            "Phase 3": [
+                { name: "Trap Bar Deadlift", sets: 5, reps: 3, vbt: "0.75+ m/s", rest: 120 },
+                { name: "Speed Squat", sets: 5, reps: 3, vbt: "0.75+ m/s", rest: 120 },
+                { name: "Bench Press", sets: 5, reps: 3, vbt: "0.75+ m/s", rest: 120 },
+                { name: "Hang Clean", sets: 4, reps: 2, vbt: "0.80–1.00 m/s", rest: 150 },
+                { name: "Landmine Press", sets: 4, reps: 4, vbt: "0.75+ m/s", rest: 90 }
+            ],
+            "In-Season": [
+                { name: "Trap Bar Deadlift", sets: 3, reps: 3, vbt: "0.60–0.75 m/s", rest: 120 },
+                { name: "Squat", sets: 3, reps: 3, vbt: "0.60–0.75 m/s", rest: 120 },
+                { name: "Bench Press", sets: 3, reps: 3, vbt: "0.60–0.75 m/s", rest: 90 },
+                { name: "Hang Clean", sets: 3, reps: 2, vbt: "0.75–0.90 m/s", rest: 120 },
+                { name: "Landmine Press", sets: 3, reps: 4, vbt: "0.65–0.80 m/s", rest: 90 }
+            ]
+        };
+
         document.getElementById('logDate').value = new Date().toISOString().split('T');
 
         function switchTab(tabId, el) {
@@ -395,9 +463,11 @@
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             if (el) el.classList.add('active');
+            if (tabId === 'workout') {
+                renderWorkoutProgram();
+            }
         }
 
-        // Load Athletes into Dropdown Controls
         async function loadAthletes() {
             const testSelect = document.getElementById('testName');
             const logSelect = document.getElementById('logName');
@@ -424,7 +494,6 @@
                     logSelect.innerHTML = optionsHtml;
                 }
             } catch (err) {
-                console.error('Error loading athletes:', err);
                 testSelect.innerHTML = '<option value="">Error loading players</option>';
                 logSelect.innerHTML = '<option value="">Error loading players</option>';
             }
@@ -434,14 +503,146 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Initialize Athlete Dropdowns on Page Load
-        document.addEventListener('DOMContentLoaded', loadAthletes);
-        loadAthletes();
+        // Render Interactive Workout Cards for Phase
+        function renderWorkoutProgram() {
+            const phase = document.getElementById('logPhase').value;
+            const lifts = PHASE_PROGRAMS[phase] || PHASE_PROGRAMS["Phase 1"];
+            const container = document.getElementById('workoutContainer');
+            
+            let html = '';
+            lifts.forEach((lift, liftIdx) => {
+                html += `
+                <div class="exercise-card" data-lift="${escapeHtml(lift.name)}">
+                    <div class="exercise-header">
+                        <span class="exercise-title">${escapeHtml(lift.name)}</span>
+                        <span class="exercise-meta">${lift.sets} Sets x ${lift.reps} Reps | Target: ${lift.vbt}</span>
+                    </div>
+                    <div>`;
+                
+                for (let s = 1; s <= lift.sets; s++) {
+                    html += `
+                    <div class="set-row" id="row-${liftIdx}-${s}">
+                        <input type="checkbox" class="set-check" onchange="toggleSetRow(this)">
+                        <span class="set-label">Set ${s}</span>
+                        <div class="set-input-group">
+                            <input type="number" class="actual-weight" placeholder="Weight (lbs)">
+                            <input type="number" step="0.01" class="actual-vbt" placeholder="VBT (m/s)">
+                            <input type="number" class="actual-rpe" min="1" max="10" placeholder="RPE">
+                        </div>
+                    </div>`;
+                }
 
-        // Handle Profile Creation
+                html += `
+                    </div>
+                    <button type="button" class="rest-timer-btn" onclick="startRestTimer(${lift.rest}, this)">
+                        ⏱️ Start Rest Timer (${lift.rest}s) <span class="timer-display"></span>
+                    </button>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleSetRow(checkbox) {
+            const row = checkbox.closest('.set-row');
+            if (checkbox.checked) {
+                row.classList.add('completed');
+            } else {
+                row.classList.remove('completed');
+            }
+        }
+
+        function startRestTimer(seconds, btn) {
+            let remaining = seconds;
+            const display = btn.querySelector('.timer-display');
+            btn.disabled = true;
+            
+            const timer = setInterval(() => {
+                remaining--;
+                display.textContent = `${remaining}s`;
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    display.textContent = 'REST DONE! READY!';
+                    btn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        // Submit All Completed Sets
+        async function submitFullWorkout() {
+            const name = document.getElementById('logName').value;
+            const date = document.getElementById('logDate').value;
+            const phase = document.getElementById('logPhase').value;
+            const week = document.getElementById('logWeek').value;
+            const status = document.getElementById('workoutStatus');
+
+            if (!name) {
+                alert('Please select an athlete!');
+                return;
+            }
+
+            const setsToSubmit = [];
+            document.querySelectorAll('.exercise-card').forEach(card => {
+                const liftName = card.getAttribute('data-lift');
+                card.querySelectorAll('.set-row').forEach((row, idx) => {
+                    const check = row.querySelector('.set-check').checked;
+                    const weight = row.querySelector('.actual-weight').value;
+                    const vbt = row.querySelector('.actual-vbt').value;
+                    const rpe = row.querySelector('.actual-rpe').value;
+
+                    // Submit if checked or if weight/vbt entered
+                    if (check || weight || vbt) {
+                        setsToSubmit.push({
+                            lift: liftName,
+                            setNum: idx + 1,
+                            targetReps: "",
+                            restTime: "",
+                            actualLoad: weight || "0",
+                            actualVbt: vbt || "0.00",
+                            rpe: rpe || "",
+                            cleanTech: "Yes",
+                            notes: ""
+                        });
+                    }
+                });
+            });
+
+            if (setsToSubmit.length === 0) {
+                alert('Please check off or enter data for at least one set before submitting!');
+                return;
+            }
+
+            status.style.display = 'block';
+            status.className = 'status-msg';
+            status.textContent = `Saving ${setsToSubmit.length} completed set(s) to Google Sheets...`;
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'logFullWorkout',
+                        payload: { name, date, phase, week, sets: setsToSubmit }
+                    })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    status.className = 'status-msg success';
+                    status.textContent = `Logged ${setsToSubmit.length} set(s) successfully to player tab and master logs!`;
+                }
+            } catch (err) {
+                status.className = 'status-msg error';
+                status.textContent = 'Error saving workout session. Check Apps Script Web App permissions.';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAthletes();
+            renderWorkoutProgram();
+        });
+
+        // Profile Form Submit
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const status = document.getElementById('profileStatus');
             status.style.display = 'block';
             status.className = 'status-msg';
@@ -465,19 +666,17 @@
                 if (data.status === 'success') {
                     status.className = 'status-msg success';
                     status.textContent = 'Profile created! Personal tab "' + payload.name + '" generated in Google Sheet.';
-                    // Refresh dropdowns instantly so new player appears
                     await loadAthletes();
                 }
             } catch (err) {
                 status.className = 'status-msg error';
-                status.textContent = 'Error creating profile. Please verify your Apps Script Web App permissions.';
+                status.textContent = 'Error creating profile.';
             }
         });
 
-        // Handle 3-Point Testing
+        // 3-Pt Test Form Submit
         document.getElementById('testingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
             const status = document.getElementById('testingStatus');
             status.style.display = 'block';
             status.className = 'status-msg';
@@ -505,46 +704,6 @@
             } catch (err) {
                 status.className = 'status-msg error';
                 status.textContent = 'Error submitting test data.';
-            }
-        });
-
-        // Handle Workout Logging
-        document.getElementById('workoutForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const status = document.getElementById('workoutStatus');
-            status.style.display = 'block';
-            status.className = 'status-msg';
-            status.textContent = 'Logging workout session...';
-
-            const payload = {
-                name: document.getElementById('logName').value,
-                date: document.getElementById('logDate').value,
-                phase: document.getElementById('logPhase').value,
-                week: document.getElementById('logWeek').value,
-                lift: document.getElementById('logLift').value,
-                prescribedLoad: document.getElementById('prescribedLoad').value,
-                actualLoad: document.getElementById('actualLoad').value,
-                targetVbt: document.getElementById('targetVbt').value,
-                actualVbt: document.getElementById('actualVbt').value,
-                rpe: document.getElementById('logRpe').value,
-                techniqueClean: document.getElementById('cleanTech').value,
-                notes: document.getElementById('logNotes').value
-            };
-
-            try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'logWorkoutSession', payload })
-                });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    status.className = 'status-msg success';
-                    status.textContent = 'Workout set logged successfully!';
-                }
-            } catch (err) {
-                status.className = 'status-msg error';
-                status.textContent = 'Error logging workout set.';
             }
         });
     </script>
