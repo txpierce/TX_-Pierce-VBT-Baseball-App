@@ -178,7 +178,7 @@
             <form id="profileForm">
                 <div class="form-group">
                     <label for="profName">Full Name</label>
-                    <input type="text" id="profName" required placeholder="e.g., James Doyle">
+                    <input type="text" id="profName" required placeholder="Insert Name">
                 </div>
                 <div class="inline-group">
                     <div class="form-group">
@@ -228,7 +228,7 @@
             <form id="testingForm">
                 <div class="form-group">
                     <label for="testName">Athlete Name</label>
-                    <input type="text" id="testName" required placeholder="Must match profile name">
+                    <input type="text" id="testName" required placeholder="Insert Name">
                 </div>
                 <div class="inline-group">
                     <div class="form-group">
@@ -297,7 +297,7 @@
                 <div class="inline-group">
                     <div class="form-group">
                         <label for="logName">Athlete Name</label>
-                        <input type="text" id="logName" required placeholder="James Doyle">
+                        <input type="text" id="logName" required placeholder="Insert Name">
                     </div>
                     <div class="form-group">
                         <label for="logDate">Date</label>
@@ -384,7 +384,7 @@
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrYRiNlzbXWbnEODS9ecwXWv41WxhinaStCIzf28XTRk9Xt3P4FIe60WhKyWHTgV06/exec";
 
         // Set today's date safely
-        document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('logDate').value = new Date().toISOString().split('T');
 
         function switchTab(tabId, el) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
