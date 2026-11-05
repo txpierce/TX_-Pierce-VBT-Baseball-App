@@ -49,7 +49,7 @@
         .nav-tabs {
             display: flex;
             justify-content: space-around;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             background: #E2E8F0;
             border-radius: 8px;
             padding: 4px;
@@ -58,7 +58,7 @@
         .nav-tab {
             flex: 1;
             text-align: center;
-            padding: 10px;
+            padding: 12px 8px;
             font-weight: 600;
             cursor: pointer;
             border-radius: 6px;
@@ -156,15 +156,6 @@
             background-color: #FDE8E8;
             color: #9B1C1C;
         }
-
-        .config-box {
-            background-color: #FFF8F1;
-            border: 1px solid #FFE4D6;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
-        }
     </style>
 </head>
 <body>
@@ -174,12 +165,6 @@
     </header>
 
     <div class="container">
-        <!-- Google Apps Script Web App URL Box -->
-        <div class="config-box">
-            <label for="apiUrl"><strong>Google Apps Script Web App URL:</strong></label>
-            <input type="text" id="apiUrl" placeholder="Paste your deployed Web App URL here">
-        </div>
-
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
             <div id="tab-profile" class="nav-tab active" onclick="switchTab('profile', this)">1. Profile</div>
@@ -395,9 +380,11 @@
     </div>
 
     <script>
+        // Hardcoded Google Apps Script Web App Endpoint
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrYRiNlzbXWbnEODS9ecwXWv41WxhinaStCIzf28XTRk9Xt3P4FIe60WhKyWHTgV06/exec";
+
         // Set today's date safely
-        const todayStr = new Date().toISOString().split('T')[0];
-        document.getElementById('logDate').value = todayStr;
+        document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
 
         function switchTab(tabId, el) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -406,20 +393,9 @@
             if (el) el.classList.add('active');
         }
 
-        function getApiUrl() {
-            const url = document.getElementById('apiUrl').value.trim();
-            if (!url) {
-                alert('Please enter your Google Apps Script Web App URL at the top!');
-                return null;
-            }
-            return url;
-        }
-
         // Handle Profile Creation
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const url = getApiUrl();
-            if (!url) return;
 
             const status = document.getElementById('profileStatus');
             status.style.display = 'block';
@@ -436,7 +412,7 @@
             };
 
             try {
-                const res = await fetch(url, {
+                const res = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'createProfile', payload })
                 });
@@ -447,15 +423,13 @@
                 }
             } catch (err) {
                 status.className = 'status-msg error';
-                status.textContent = 'Error creating profile. Verify Apps Script Web App URL and deployment access.';
+                status.textContent = 'Error creating profile. Please verify your Apps Script Web App permissions.';
             }
         });
 
         // Handle 3-Point Testing
         document.getElementById('testingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const url = getApiUrl();
-            if (!url) return;
 
             const status = document.getElementById('testingStatus');
             status.style.display = 'block';
@@ -472,7 +446,7 @@
             };
 
             try {
-                const res = await fetch(url, {
+                const res = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'submit3PointTest', payload })
                 });
@@ -490,8 +464,6 @@
         // Handle Workout Logging
         document.getElementById('workoutForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const url = getApiUrl();
-            if (!url) return;
 
             const status = document.getElementById('workoutStatus');
             status.style.display = 'block';
@@ -514,7 +486,7 @@
             };
 
             try {
-                const res = await fetch(url, {
+                const res = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify({ action: 'logWorkoutSession', payload })
                 });
