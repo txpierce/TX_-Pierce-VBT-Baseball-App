@@ -81,7 +81,7 @@
         }
 
         .card.active {
-            display: block;
+            display: block !important;
         }
 
         h2 {
@@ -174,7 +174,7 @@
     </header>
 
     <div class="container">
-        <!-- Google Apps Script URL Box -->
+        <!-- Google Apps Script Web App URL Box -->
         <div class="config-box">
             <label for="apiUrl"><strong>Google Apps Script Web App URL:</strong></label>
             <input type="text" id="apiUrl" placeholder="Paste your deployed Web App URL here">
@@ -182,9 +182,9 @@
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <div class="nav-tab active" onclick="switchTab('profile')">1. Profile</div>
-            <div class="nav-tab" onclick="switchTab('testing')">2. 3-Pt Test</div>
-            <div class="nav-tab" onclick="switchTab('workout')">3. Daily Log</div>
+            <div id="tab-profile" class="nav-tab active" onclick="switchTab('profile', this)">1. Profile</div>
+            <div id="tab-testing" class="nav-tab" onclick="switchTab('testing', this)">2. 3-Pt Test</div>
+            <div id="tab-workout" class="nav-tab" onclick="switchTab('workout', this)">3. Daily Log</div>
         </div>
 
         <!-- 1. Profile Creation Form -->
@@ -395,13 +395,15 @@
     </div>
 
     <script>
-        document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+        // Set today's date safely
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('logDate').value = todayStr;
 
-        function switchTab(tabId) {
+        function switchTab(tabId, el) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            if (el) el.classList.add('active');
         }
 
         function getApiUrl() {
@@ -445,7 +447,7 @@
                 }
             } catch (err) {
                 status.className = 'status-msg error';
-                status.textContent = 'Error creating profile. Verify Apps Script deployment settings.';
+                status.textContent = 'Error creating profile. Verify Apps Script Web App URL and deployment access.';
             }
         });
 
