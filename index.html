@@ -12,7 +12,6 @@
             --card-bg: #FFFFFF;
             --text: #1F2937;
             --border: #E5E7EB;
-            --success: #10B981;
         }
 
         body {
@@ -139,7 +138,6 @@
             opacity: 0.9;
         }
 
-        /* Lift Section Styling */
         .exercise-card {
             background: #F8FAFC;
             border: 1px solid #CBD5E1;
@@ -203,6 +201,12 @@
             padding: 6px;
             font-size: 0.85rem;
             text-align: center;
+        }
+
+        /* Gray placeholder formatting for target loads */
+        .actual-weight::placeholder {
+            color: #94A3B8;
+            font-style: italic;
         }
 
         .set-check {
@@ -380,14 +384,14 @@
             <div id="testingStatus" class="status-msg"></div>
         </div>
 
-        <!-- 3. Interactive Full Workout Logger -->
+        <!-- 3. Dynamic Full Workout Session Logger -->
         <div id="workout" class="card">
             <h2>Daily Workout Session Logger</h2>
             
             <div class="inline-group">
                 <div class="form-group">
                     <label for="logName">Athlete Name</label>
-                    <select id="logName" required>
+                    <select id="logName" onchange="onAthleteSelected()" required>
                         <option value="">Loading players...</option>
                     </select>
                 </div>
@@ -409,7 +413,7 @@
                 </div>
                 <div class="form-group">
                     <label for="logWeek">Week</label>
-                    <input type="number" id="logWeek" min="1" max="8" value="1" required>
+                    <input type="number" id="logWeek" min="1" max="8" value="1" onchange="renderWorkoutProgram()" required>
                 </div>
             </div>
 
@@ -424,37 +428,40 @@
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrYRiNlzbXWbnEODS9ecwXWv41WxhinaStCIzf28XTRk9Xt3P4FIe60WhKyWHTgV06/exec";
 
-        // Program Prescriptions per Phase
+        // Program Matrix Percentages (% ETM per Phase & Lift)
         const PHASE_PROGRAMS = {
             "Phase 1": [
-                { name: "Trap Bar Deadlift", sets: 4, reps: 8, vbt: "0.40–0.60 m/s", rest: 120 },
-                { name: "Squat", sets: 4, reps: 8, vbt: "0.40–0.60 m/s", rest: 120 },
-                { name: "Bench Press", sets: 4, reps: 8, vbt: "0.40–0.60 m/s", rest: 90 },
-                { name: "Hang Clean", sets: 4, reps: 4, vbt: "0.45–0.55 m/s", rest: 150 },
-                { name: "Landmine Press", sets: 4, reps: 8, vbt: "0.45–0.60 m/s", rest: 90 }
+                { name: "Trap Bar Deadlift", sets: 4, reps: 8, pct: 0.60, vbt: "0.40–0.60 m/s", rest: 120 },
+                { name: "Squat", sets: 4, reps: 8, pct: 0.60, vbt: "0.40–0.60 m/s", rest: 120 },
+                { name: "Bench Press", sets: 4, reps: 8, pct: 0.60, vbt: "0.40–0.60 m/s", rest: 90 },
+                { name: "Hang Clean", sets: 4, reps: 4, pct: 0.50, vbt: "0.45–0.55 m/s", rest: 150 },
+                { name: "Landmine Press", sets: 4, reps: 8, pct: 0.40, vbt: "0.45–0.60 m/s", rest: 90 }
             ],
             "Phase 2": [
-                { name: "Trap Bar Deadlift", sets: 5, reps: 5, vbt: "0.30–0.50 m/s", rest: 180 },
-                { name: "Squat", sets: 5, reps: 5, vbt: "0.30–0.50 m/s", rest: 180 },
-                { name: "Bench Press", sets: 5, reps: 5, vbt: "0.30–0.50 m/s", rest: 150 },
-                { name: "Hang Clean", sets: 4, reps: 3, vbt: "0.60–0.75 m/s", rest: 180 },
-                { name: "Landmine Press", sets: 4, reps: 5, vbt: "0.40–0.55 m/s", rest: 120 }
+                { name: "Trap Bar Deadlift", sets: 5, reps: 5, pct: 0.75, vbt: "0.30–0.50 m/s", rest: 180 },
+                { name: "Squat", sets: 5, reps: 5, pct: 0.75, vbt: "0.30–0.50 m/s", rest: 180 },
+                { name: "Bench Press", sets: 5, reps: 5, pct: 0.75, vbt: "0.30–0.50 m/s", rest: 150 },
+                { name: "Hang Clean", sets: 4, reps: 3, pct: 0.65, vbt: "0.60–0.75 m/s", rest: 180 },
+                { name: "Landmine Press", sets: 4, reps: 5, pct: 0.55, vbt: "0.40–0.55 m/s", rest: 120 }
             ],
             "Phase 3": [
-                { name: "Trap Bar Deadlift", sets: 5, reps: 3, vbt: "0.75+ m/s", rest: 120 },
-                { name: "Speed Squat", sets: 5, reps: 3, vbt: "0.75+ m/s", rest: 120 },
-                { name: "Bench Press", sets: 5, reps: 3, vbt: "0.75+ m/s", rest: 120 },
-                { name: "Hang Clean", sets: 4, reps: 2, vbt: "0.80–1.00 m/s", rest: 150 },
-                { name: "Landmine Press", sets: 4, reps: 4, vbt: "0.75+ m/s", rest: 90 }
+                { name: "Trap Bar Deadlift", sets: 5, reps: 3, pct: 0.50, vbt: "0.75+ m/s", rest: 120 },
+                { name: "Squat", sets: 5, reps: 3, pct: 0.50, vbt: "0.75+ m/s", rest: 120 },
+                { name: "Bench Press", sets: 5, reps: 3, pct: 0.50, vbt: "0.75+ m/s", rest: 120 },
+                { name: "Hang Clean", sets: 4, reps: 2, pct: 0.55, vbt: "0.80–1.00 m/s", rest: 150 },
+                { name: "Landmine Press", sets: 4, reps: 4, pct: 0.40, vbt: "0.75+ m/s", rest: 90 }
             ],
             "In-Season": [
-                { name: "Trap Bar Deadlift", sets: 3, reps: 3, vbt: "0.60–0.75 m/s", rest: 120 },
-                { name: "Squat", sets: 3, reps: 3, vbt: "0.60–0.75 m/s", rest: 120 },
-                { name: "Bench Press", sets: 3, reps: 3, vbt: "0.60–0.75 m/s", rest: 90 },
-                { name: "Hang Clean", sets: 3, reps: 2, vbt: "0.75–0.90 m/s", rest: 120 },
-                { name: "Landmine Press", sets: 3, reps: 4, vbt: "0.65–0.80 m/s", rest: 90 }
+                { name: "Trap Bar Deadlift", sets: 3, reps: 3, pct: 0.60, vbt: "0.60–0.75 m/s", rest: 120 },
+                { name: "Squat", sets: 3, reps: 3, pct: 0.60, vbt: "0.60–0.75 m/s", rest: 120 },
+                { name: "Bench Press", sets: 3, reps: 3, pct: 0.60, vbt: "0.60–0.75 m/s", rest: 90 },
+                { name: "Hang Clean", sets: 3, reps: 2, pct: 0.55, vbt: "0.75–0.90 m/s", rest: 120 },
+                { name: "Landmine Press", sets: 3, reps: 4, pct: 0.45, vbt: "0.65–0.80 m/s", rest: 90 }
             ]
         };
+
+        // Cache for selected athlete's ETMs
+        let currentAthleteETMs = {};
 
         document.getElementById('logDate').value = new Date().toISOString().split('T');
 
@@ -499,11 +506,34 @@
             }
         }
 
+        async function onAthleteSelected() {
+            const athleteName = document.getElementById('logName').value;
+            if (!athleteName) {
+                currentAthleteETMs = {};
+                renderWorkoutProgram();
+                return;
+            }
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getAthleteETMs', payload: { name: athleteName } })
+                });
+                const data = await res.json();
+                if (data.status === 'success' && data.etms) {
+                    currentAthleteETMs = data.etms;
+                }
+            } catch (err) {
+                console.error("Error loading athlete ETMs", err);
+            }
+            renderWorkoutProgram();
+        }
+
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Render Interactive Workout Cards for Phase
+        // Render Interactive Workout Cards with Prescribed Weight Placeholders
         function renderWorkoutProgram() {
             const phase = document.getElementById('logPhase').value;
             const lifts = PHASE_PROGRAMS[phase] || PHASE_PROGRAMS["Phase 1"];
@@ -511,8 +541,12 @@
             
             let html = '';
             lifts.forEach((lift, liftIdx) => {
+                const etm = currentAthleteETMs[lift.name] || 0;
+                const prescribedWeight = etm > 0 ? Math.round(etm * lift.pct) : null;
+                const placeholderText = prescribedWeight ? `Target: ${prescribedWeight} lbs` : "Weight (lbs)";
+
                 html += `
-                <div class="exercise-card" data-lift="${escapeHtml(lift.name)}">
+                <div class="exercise-card" data-lift="${escapeHtml(lift.name)}" data-prescribed="${prescribedWeight || ''}">
                     <div class="exercise-header">
                         <span class="exercise-title">${escapeHtml(lift.name)}</span>
                         <span class="exercise-meta">${lift.sets} Sets x ${lift.reps} Reps | Target: ${lift.vbt}</span>
@@ -525,7 +559,7 @@
                         <input type="checkbox" class="set-check" onchange="toggleSetRow(this)">
                         <span class="set-label">Set ${s}</span>
                         <div class="set-input-group">
-                            <input type="number" class="actual-weight" placeholder="Weight (lbs)">
+                            <input type="number" class="actual-weight" placeholder="${placeholderText}">
                             <input type="number" step="0.01" class="actual-vbt" placeholder="VBT (m/s)">
                             <input type="number" class="actual-rpe" min="1" max="10" placeholder="RPE">
                         </div>
@@ -584,20 +618,21 @@
             const setsToSubmit = [];
             document.querySelectorAll('.exercise-card').forEach(card => {
                 const liftName = card.getAttribute('data-lift');
+                const prescribedWeight = card.getAttribute('data-prescribed');
                 card.querySelectorAll('.set-row').forEach((row, idx) => {
                     const check = row.querySelector('.set-check').checked;
                     const weight = row.querySelector('.actual-weight').value;
                     const vbt = row.querySelector('.actual-vbt').value;
                     const rpe = row.querySelector('.actual-rpe').value;
 
-                    // Submit if checked or if weight/vbt entered
                     if (check || weight || vbt) {
                         setsToSubmit.push({
                             lift: liftName,
                             setNum: idx + 1,
                             targetReps: "",
                             restTime: "",
-                            actualLoad: weight || "0",
+                            prescribedLoad: prescribedWeight || "",
+                            actualLoad: weight || prescribedWeight || "0",
                             actualVbt: vbt || "0.00",
                             rpe: rpe || "",
                             cleanTech: "Yes",
