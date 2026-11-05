@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VBT Baseball Master App</title>
+    <style>
+        :root {
+            --primary: #002D62;
+            --secondary: #EB6E1F;
+            --bg: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text: #1F2937;
+            --border: #E5E7EB;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            width: 100%;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 1.5rem auto;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1rem;
+            background: #E2E8F0;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.2s, color 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        .inline-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .inline-group > div {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .status-msg {
+            margin-top: 1rem;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: none;
+            text-align: center;
+        }
+
+        .status-msg.success {
+            background-color: #DEF7EC;
+            color: #03543F;
+        }
+
+        .status-msg.error {
+            background-color: #FDE8E8;
+            color: #9B1C1C;
+        }
+
+        .config-box {
+            background-color: #FFF8F1;
+            border: 1px solid #FFE4D6;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚾ VBT Baseball Master App</h1>
+    </header>
+
+    <div class="container">
+        <!-- Google Apps Script URL Box -->
+        <div class="config-box">
+            <label for="apiUrl"><strong>Google Apps Script Web App URL:</strong></label>
+            <input type="text" id="apiUrl" placeholder="Paste your deployed Web App URL here">
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" onclick="switchTab('profile')">1. Profile</div>
+            <div class="nav-tab" onclick="switchTab('testing')">2. 3-Pt Test</div>
+            <div class="nav-tab" onclick="switchTab('workout')">3. Daily Log</div>
+        </div>
+
+        <!-- 1. Profile Creation Form -->
+        <div id="profile" class="card active">
+            <h2>Athlete Profile Registration</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="profName">Full Name</label>
+                    <input type="text" id="profName" required placeholder="e.g., James Doyle">
+                </div>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="profPosition">Position</label>
+                        <select id="profPosition" required>
+                            <option value="">Select...</option>
+                            <option value="RHP">RHP</option>
+                            <option value="LHP">LHP</option>
+                            <option value="C">Catcher</option>
+                            <option value="INF">Infield</option>
+                            <option value="OF">Outfield</option>
+                            <option value="TWO-WAY">Two-Way</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profHeight">Height</label>
+                        <input type="text" id="profHeight" required placeholder="e.g., 6'1&quot;">
+                    </div>
+                </div>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="profWeight">Bodyweight (lbs)</label>
+                        <input type="number" id="profWeight" required placeholder="195">
+                    </div>
+                    <div class="form-group">
+                        <label for="profPhase">Current Phase</label>
+                        <select id="profPhase" required>
+                            <option value="Phase 1">Phase 1 (Foundation)</option>
+                            <option value="Phase 2">Phase 2 (Max Strength)</option>
+                            <option value="Phase 3">Phase 3 (Speed & Power)</option>
+                            <option value="In-Season">In-Season</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="profWeek">Week</label>
+                        <input type="number" id="profWeek" min="1" max="8" value="1" required>
+                    </div>
+                </div>
+                <button type="submit">Create Profile & Sheet Tab</button>
+            </form>
+            <div id="profileStatus" class="status-msg"></div>
+        </div>
+
+        <!-- 2. 3-Point Velocity Testing Form -->
+        <div id="testing" class="card">
+            <h2>3-Point Velocity Test (ETM @ 0.18 m/s)</h2>
+            <form id="testingForm">
+                <div class="form-group">
+                    <label for="testName">Athlete Name</label>
+                    <input type="text" id="testName" required placeholder="Must match profile name">
+                </div>
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="testPhase">Phase</label>
+                        <select id="testPhase" required>
+                            <option value="Phase 1">Phase 1</option>
+                            <option value="Phase 2">Phase 2</option>
+                            <option value="Phase 3">Phase 3</option>
+                            <option value="In-Season">In-Season</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="testLift">Main Lift</label>
+                        <select id="testLift" required>
+                            <option value="Trap Bar Deadlift">Trap Bar Deadlift</option>
+                            <option value="Squat">Squat</option>
+                            <option value="Bench Press">Bench Press</option>
+                            <option value="Hang Clean">Hang Clean</option>
+                            <option value="Landmine Press">Landmine Press</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Point 1 Load (lbs)</label>
+                        <input type="number" id="p1Load" required placeholder="135">
+                    </div>
+                    <div class="form-group">
+                        <label>Velocity (m/s)</label>
+                        <input type="number" step="0.01" id="p1Vbt" required placeholder="0.75">
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Point 2 Load (lbs)</label>
+                        <input type="number" id="p2Load" required placeholder="185">
+                    </div>
+                    <div class="form-group">
+                        <label>Velocity (m/s)</label>
+                        <input type="number" step="0.01" id="p2Vbt" required placeholder="0.55">
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label>Point 3 Load (lbs)</label>
+                        <input type="number" id="p3Load" required placeholder="225">
+                    </div>
+                    <div class="form-group">
+                        <label>Velocity (m/s)</label>
+                        <input type="number" step="0.01" id="p3Vbt" required placeholder="0.38">
+                    </div>
+                </div>
+
+                <button type="submit">Calculate ETM & Save</button>
+            </form>
+            <div id="testingStatus" class="status-msg"></div>
+        </div>
+
+        <!-- 3. Daily Workout Logger -->
+        <div id="workout" class="card">
+            <h2>Daily Workout Set Logger</h2>
+            <form id="workoutForm">
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="logName">Athlete Name</label>
+                        <input type="text" id="logName" required placeholder="James Doyle">
+                    </div>
+                    <div class="form-group">
+                        <label for="logDate">Date</label>
+                        <input type="date" id="logDate" required>
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="logPhase">Phase</label>
+                        <select id="logPhase" required>
+                            <option value="Phase 1">Phase 1</option>
+                            <option value="Phase 2">Phase 2</option>
+                            <option value="Phase 3">Phase 3</option>
+                            <option value="In-Season">In-Season</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="logWeek">Week</label>
+                        <input type="number" id="logWeek" min="1" max="8" value="1" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="logLift">Lift Performed</label>
+                    <select id="logLift" required>
+                        <option value="Trap Bar Deadlift">Trap Bar Deadlift</option>
+                        <option value="Squat">Squat</option>
+                        <option value="Bench Press">Bench Press</option>
+                        <option value="Hang Clean">Hang Clean</option>
+                        <option value="Landmine Press">Landmine Press</option>
+                    </select>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="prescribedLoad">Prescribed Load (lbs)</label>
+                        <input type="number" id="prescribedLoad" placeholder="200">
+                    </div>
+                    <div class="form-group">
+                        <label for="actualLoad">Actual Load (lbs)</label>
+                        <input type="number" id="actualLoad" required placeholder="205">
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="targetVbt">Target VBT (m/s)</label>
+                        <input type="number" step="0.01" id="targetVbt" placeholder="0.50">
+                    </div>
+                    <div class="form-group">
+                        <label for="actualVbt">Actual VBT (m/s)</label>
+                        <input type="number" step="0.01" id="actualVbt" required placeholder="0.48">
+                    </div>
+                </div>
+
+                <div class="inline-group">
+                    <div class="form-group">
+                        <label for="logRpe">RPE (1-10)</label>
+                        <input type="number" min="1" max="10" id="logRpe" required placeholder="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="cleanTech">Clean Tech?</label>
+                        <select id="cleanTech" required>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="logNotes">Notes</label>
+                    <textarea id="logNotes" rows="2" placeholder="Bar felt fast, good hip drive..."></textarea>
+                </div>
+
+                <button type="submit">Log Workout Set</button>
+            </form>
+            <div id="workoutStatus" class="status-msg"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function getApiUrl() {
+            const url = document.getElementById('apiUrl').value.trim();
+            if (!url) {
+                alert('Please enter your Google Apps Script Web App URL at the top!');
+                return null;
+            }
+            return url;
+        }
+
+        // Handle Profile Creation
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = getApiUrl();
+            if (!url) return;
+
+            const status = document.getElementById('profileStatus');
+            status.style.display = 'block';
+            status.className = 'status-msg';
+            status.textContent = 'Creating profile and generating sheet tab...';
+
+            const payload = {
+                name: document.getElementById('profName').value,
+                position: document.getElementById('profPosition').value,
+                height: document.getElementById('profHeight').value,
+                bodyweight: document.getElementById('profWeight').value,
+                phase: document.getElementById('profPhase').value,
+                week: document.getElementById('profWeek').value
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'createProfile', payload })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    status.className = 'status-msg success';
+                    status.textContent = 'Profile created! Personal tab "' + payload.name + '" generated in Google Sheet.';
+                }
+            } catch (err) {
+                status.className = 'status-msg error';
+                status.textContent = 'Error creating profile. Verify Apps Script deployment settings.';
+            }
+        });
+
+        // Handle 3-Point Testing
+        document.getElementById('testingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = getApiUrl();
+            if (!url) return;
+
+            const status = document.getElementById('testingStatus');
+            status.style.display = 'block';
+            status.className = 'status-msg';
+            status.textContent = 'Calculating linear regression ETM...';
+
+            const payload = {
+                name: document.getElementById('testName').value,
+                phase: document.getElementById('testPhase').value,
+                lift: document.getElementById('testLift').value,
+                p1: { load: Number(document.getElementById('p1Load').value), vbt: Number(document.getElementById('p1Vbt').value) },
+                p2: { load: Number(document.getElementById('p2Load').value), vbt: Number(document.getElementById('p2Vbt').value) },
+                p3: { load: Number(document.getElementById('p3Load').value), vbt: Number(document.getElementById('p3Vbt').value) }
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'submit3PointTest', payload })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    status.className = 'status-msg success';
+                    status.textContent = 'ETM Calculated: ' + data.etm + ' lbs (@ 0.18 m/s). Saved to player sheet!';
+                }
+            } catch (err) {
+                status.className = 'status-msg error';
+                status.textContent = 'Error submitting test data.';
+            }
+        });
+
+        // Handle Workout Logging
+        document.getElementById('workoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const url = getApiUrl();
+            if (!url) return;
+
+            const status = document.getElementById('workoutStatus');
+            status.style.display = 'block';
+            status.className = 'status-msg';
+            status.textContent = 'Logging workout session...';
+
+            const payload = {
+                name: document.getElementById('logName').value,
+                date: document.getElementById('logDate').value,
+                phase: document.getElementById('logPhase').value,
+                week: document.getElementById('logWeek').value,
+                lift: document.getElementById('logLift').value,
+                prescribedLoad: document.getElementById('prescribedLoad').value,
+                actualLoad: document.getElementById('actualLoad').value,
+                targetVbt: document.getElementById('targetVbt').value,
+                actualVbt: document.getElementById('actualVbt').value,
+                rpe: document.getElementById('logRpe').value,
+                techniqueClean: document.getElementById('cleanTech').value,
+                notes: document.getElementById('logNotes').value
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'logWorkoutSession', payload })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    status.className = 'status-msg success';
+                    status.textContent = 'Workout set logged successfully!';
+                }
+            } catch (err) {
+                status.className = 'status-msg error';
+                status.textContent = 'Error logging workout set.';
+            }
+        });
+    </script>
+</body>
+</html>
