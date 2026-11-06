@@ -147,12 +147,16 @@
         }
 
         .exercise-header {
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .exercise-title-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #E2E8F0;
-            padding-bottom: 6px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .exercise-title {
@@ -171,12 +175,44 @@
             margin-left: 6px;
         }
 
-        .exercise-meta {
+        .exercise-targets {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
             font-size: 0.8rem;
-            color: #64748B;
+        }
+
+        .target-pill {
             background: #E2E8F0;
+            color: #334155;
             padding: 3px 8px;
             border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .target-pill.vbt {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .target-pill.load {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .set-table-header {
+            display: flex;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #64748B;
+            margin-bottom: 4px;
+            padding-left: 32px;
+        }
+
+        .set-col-label {
+            flex: 1;
+            text-align: center;
         }
 
         .set-row {
@@ -198,7 +234,8 @@
         .set-label {
             font-weight: bold;
             font-size: 0.85rem;
-            width: 50px;
+            width: 45px;
+            color: var(--primary);
         }
 
         .set-input-group {
@@ -213,14 +250,15 @@
             text-align: center;
         }
 
-        .actual-weight::placeholder {
-            color: #94A3B8;
-            font-style: italic;
+        .weight-input {
+            font-weight: bold;
+            color: #0F172A;
+            background: #F8FAFC;
         }
 
         .set-check {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             cursor: pointer;
         }
 
@@ -577,14 +615,17 @@
             lifts.forEach((lift, liftIdx) => {
                 const etm = currentAthleteETMs[lift.lift] || 0;
                 const prescribedWeight = (etm > 0 && lift.pct > 0) ? Math.round(etm * lift.pct) : null;
-                const placeholderText = prescribedWeight ? `Target: ${prescribedWeight} lbs` : (lift.prescription || "Weight (lbs)");
 
                 if (lift.sets === 0) {
                     html += `
                     <div class="exercise-card">
                         <div class="exercise-header">
-                            <span class="exercise-title">${escapeHtml(lift.lift)} <span class="cat-badge">${escapeHtml(lift.category)}</span></span>
-                            <span class="exercise-meta">${escapeHtml(lift.prescription)}</span>
+                            <div class="exercise-title-row">
+                                <span class="exercise-title">${escapeHtml(lift.lift)} <span class="cat-badge">${escapeHtml(lift.category)}</span></span>
+                            </div>
+                            <div class="exercise-targets">
+                                <span class="target-pill">📋 Rx: ${escapeHtml(lift.prescription)}</span>
+                            </div>
                         </div>
                     </div>`;
                     return;
@@ -593,12 +634,26 @@
                 html += `
                 <div class="exercise-card" data-lift="${escapeHtml(lift.lift)}" data-category="${escapeHtml(lift.category)}" data-prescribed="${prescribedWeight || ''}">
                     <div class="exercise-header">
-                        <div>
-                            <span class="exercise-title">${escapeHtml(lift.lift)}</span>
-                            <span class="cat-badge">${escapeHtml(lift.category)}</span>
+                        <div class="exercise-title-row">
+                            <div>
+                                <span class="exercise-title">${escapeHtml(lift.lift)}</span>
+                                <span class="cat-badge">${escapeHtml(lift.category)}</span>
+                            </div>
                         </div>
-                        <span class="exercise-meta">${lift.prescription} | Target: ${escapeHtml(lift.vbt)}</span>
+                        <div class="exercise-targets">
+                            <span class="target-pill">📋 Rx: ${escapeHtml(lift.prescription)}</span>
+                            ${prescribedWeight ? `<span class="target-pill load">🎯 Target Load: ${prescribedWeight} lbs</span>` : ''}
+                            <span class="target-pill vbt">⚡ Target VBT: ${escapeHtml(lift.vbt)}</span>
+                        </div>
                     </div>
+                    
+                    <div class="set-table-header">
+                        <span style="width: 45px;">Set #</span>
+                        <span class="set-col-label">Weight (lbs)</span>
+                        <span class="set-col-label">Actual VBT</span>
+                        <span class="set-col-label">RPE</span>
+                    </div>
+
                     <div>`;
                 
                 for (let s = 1; s <= lift.sets; s++) {
@@ -607,9 +662,9 @@
                         <input type="checkbox" class="set-check" onchange="toggleSetRow(this)">
                         <span class="set-label">Set ${s}</span>
                         <div class="set-input-group">
-                            <input type="number" class="actual-weight" placeholder="${placeholderText}">
-                            <input type="number" step="0.01" class="actual-vbt" placeholder="VBT (m/s)">
-                            <input type="number" class="actual-rpe" min="1" max="10" placeholder="RPE">
+                            <input type="number" class="actual-weight weight-input" value="${prescribedWeight || ''}" placeholder="${prescribedWeight || 'Lbs'}">
+                            <input type="number" step="0.01" class="actual-vbt" placeholder="e.g. 0.52">
+                            <input type="number" class="actual-rpe" min="1" max="10" placeholder="1-10">
                         </div>
                     </div>`;
                 }
