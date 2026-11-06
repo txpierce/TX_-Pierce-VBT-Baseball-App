@@ -114,7 +114,7 @@
 
         .inline-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .inline-group > div {
@@ -161,6 +161,16 @@
             font-size: 1.05rem;
         }
 
+        .cat-badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #DBEAFE;
+            color: #1E40AF;
+            margin-left: 6px;
+        }
+
         .exercise-meta {
             font-size: 0.8rem;
             color: #64748B;
@@ -203,7 +213,6 @@
             text-align: center;
         }
 
-        /* Gray placeholder formatting for target loads */
         .actual-weight::placeholder {
             color: #94A3B8;
             font-style: italic;
@@ -306,7 +315,7 @@
                     </div>
                     <div class="form-group">
                         <label for="profWeek">Week</label>
-                        <input type="number" id="profWeek" min="1" max="8" value="1" required>
+                        <input type="number" id="profWeek" min="1" max="24" value="1" required>
                     </div>
                 </div>
                 <button type="submit">Create Profile & Sheet Tab</button>
@@ -401,19 +410,32 @@
                 </div>
             </div>
 
+            <!-- Phase, Week, and Day Selectors -->
             <div class="inline-group">
                 <div class="form-group">
                     <label for="logPhase">Phase</label>
-                    <select id="logPhase" onchange="renderWorkoutProgram()">
-                        <option value="Phase 1">Phase 1 (Foundation)</option>
-                        <option value="Phase 2">Phase 2 (Max Strength)</option>
-                        <option value="Phase 3">Phase 3 (Speed & Power)</option>
-                        <option value="In-Season">In-Season (Maintenance)</option>
+                    <select id="logPhase" onchange="fetchAndRenderWorkout()">
+                        <option value="Phase 1">Phase 1</option>
+                        <option value="Phase 2">Phase 2</option>
+                        <option value="Phase 3">Phase 3</option>
+                        <option value="In-Season">In-Season</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="logWeek">Week</label>
-                    <input type="number" id="logWeek" min="1" max="8" value="1" onchange="renderWorkoutProgram()" required>
+                    <input type="number" id="logWeek" min="1" max="24" value="1" onchange="fetchAndRenderWorkout()" required>
+                </div>
+                <div class="form-group">
+                    <label for="logDay">Day</label>
+                    <select id="logDay" onchange="fetchAndRenderWorkout()">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
                 </div>
             </div>
 
@@ -428,39 +450,6 @@
     <script>
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrYRiNlzbXWbnEODS9ecwXWv41WxhinaStCIzf28XTRk9Xt3P4FIe60WhKyWHTgV06/exec";
 
-        // Program Matrix Percentages (% ETM per Phase & Lift)
-        const PHASE_PROGRAMS = {
-            "Phase 1": [
-                { name: "Trap Bar Deadlift", sets: 4, reps: 8, pct: 0.60, vbt: "0.40–0.60 m/s", rest: 120 },
-                { name: "Squat", sets: 4, reps: 8, pct: 0.60, vbt: "0.40–0.60 m/s", rest: 120 },
-                { name: "Bench Press", sets: 4, reps: 8, pct: 0.60, vbt: "0.40–0.60 m/s", rest: 90 },
-                { name: "Hang Clean", sets: 4, reps: 4, pct: 0.50, vbt: "0.45–0.55 m/s", rest: 150 },
-                { name: "Landmine Press", sets: 4, reps: 8, pct: 0.40, vbt: "0.45–0.60 m/s", rest: 90 }
-            ],
-            "Phase 2": [
-                { name: "Trap Bar Deadlift", sets: 5, reps: 5, pct: 0.75, vbt: "0.30–0.50 m/s", rest: 180 },
-                { name: "Squat", sets: 5, reps: 5, pct: 0.75, vbt: "0.30–0.50 m/s", rest: 180 },
-                { name: "Bench Press", sets: 5, reps: 5, pct: 0.75, vbt: "0.30–0.50 m/s", rest: 150 },
-                { name: "Hang Clean", sets: 4, reps: 3, pct: 0.65, vbt: "0.60–0.75 m/s", rest: 180 },
-                { name: "Landmine Press", sets: 4, reps: 5, pct: 0.55, vbt: "0.40–0.55 m/s", rest: 120 }
-            ],
-            "Phase 3": [
-                { name: "Trap Bar Deadlift", sets: 5, reps: 3, pct: 0.50, vbt: "0.75+ m/s", rest: 120 },
-                { name: "Squat", sets: 5, reps: 3, pct: 0.50, vbt: "0.75+ m/s", rest: 120 },
-                { name: "Bench Press", sets: 5, reps: 3, pct: 0.50, vbt: "0.75+ m/s", rest: 120 },
-                { name: "Hang Clean", sets: 4, reps: 2, pct: 0.55, vbt: "0.80–1.00 m/s", rest: 150 },
-                { name: "Landmine Press", sets: 4, reps: 4, pct: 0.40, vbt: "0.75+ m/s", rest: 90 }
-            ],
-            "In-Season": [
-                { name: "Trap Bar Deadlift", sets: 3, reps: 3, pct: 0.60, vbt: "0.60–0.75 m/s", rest: 120 },
-                { name: "Squat", sets: 3, reps: 3, pct: 0.60, vbt: "0.60–0.75 m/s", rest: 120 },
-                { name: "Bench Press", sets: 3, reps: 3, pct: 0.60, vbt: "0.60–0.75 m/s", rest: 90 },
-                { name: "Hang Clean", sets: 3, reps: 2, pct: 0.55, vbt: "0.75–0.90 m/s", rest: 120 },
-                { name: "Landmine Press", sets: 3, reps: 4, pct: 0.45, vbt: "0.65–0.80 m/s", rest: 90 }
-            ]
-        };
-
-        // Cache for selected athlete's ETMs
         let currentAthleteETMs = {};
 
         document.getElementById('logDate').value = new Date().toISOString().split('T');
@@ -471,7 +460,7 @@
             document.getElementById(tabId).classList.add('active');
             if (el) el.classList.add('active');
             if (tabId === 'workout') {
-                renderWorkoutProgram();
+                fetchAndRenderWorkout();
             }
         }
 
@@ -510,7 +499,7 @@
             const athleteName = document.getElementById('logName').value;
             if (!athleteName) {
                 currentAthleteETMs = {};
-                renderWorkoutProgram();
+                fetchAndRenderWorkout();
                 return;
             }
 
@@ -526,30 +515,71 @@
             } catch (err) {
                 console.error("Error loading athlete ETMs", err);
             }
-            renderWorkoutProgram();
+            fetchAndRenderWorkout();
         }
 
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Render Interactive Workout Cards with Prescribed Weight Placeholders
-        function renderWorkoutProgram() {
+        async function fetchAndRenderWorkout() {
             const phase = document.getElementById('logPhase').value;
-            const lifts = PHASE_PROGRAMS[phase] || PHASE_PROGRAMS["Phase 1"];
+            const week = document.getElementById('logWeek').value;
+            const day = document.getElementById('logDay').value;
             const container = document.getElementById('workoutContainer');
-            
+
+            container.innerHTML = '<div style="text-align:center; padding: 20px; color:#64748B;">Loading workout plan from Master Workouts sheet...</div>';
+
+            let exercises = [];
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'getDailyWorkout', payload: { phase, week, day } })
+                });
+                const data = await res.json();
+                if (data.status === 'success' && Array.isArray(data.exercises)) {
+                    exercises = data.exercises;
+                }
+            } catch (err) {
+                console.error("Error fetching daily workout", err);
+            }
+
+            if (exercises.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 20px; color:#64748B;">No workout scheduled for ${escapeHtml(phase)} - Week ${escapeHtml(week)} (${escapeHtml(day)}).</div>`;
+                return;
+            }
+
+            renderExerciseCards(exercises);
+        }
+
+        function renderExerciseCards(lifts) {
+            const container = document.getElementById('workoutContainer');
             let html = '';
+
             lifts.forEach((lift, liftIdx) => {
-                const etm = currentAthleteETMs[lift.name] || 0;
-                const prescribedWeight = etm > 0 ? Math.round(etm * lift.pct) : null;
-                const placeholderText = prescribedWeight ? `Target: ${prescribedWeight} lbs` : "Weight (lbs)";
+                const etm = currentAthleteETMs[lift.lift] || 0;
+                const prescribedWeight = (etm > 0 && lift.pct > 0) ? Math.round(etm * lift.pct) : null;
+                const placeholderText = prescribedWeight ? `Target: ${prescribedWeight} lbs` : (lift.prescription || "Weight (lbs)");
+
+                if (lift.sets === 0) {
+                    html += `
+                    <div class="exercise-card">
+                        <div class="exercise-header">
+                            <span class="exercise-title">${escapeHtml(lift.lift)} <span class="cat-badge">${escapeHtml(lift.category)}</span></span>
+                            <span class="exercise-meta">${escapeHtml(lift.prescription)}</span>
+                        </div>
+                    </div>`;
+                    return;
+                }
 
                 html += `
-                <div class="exercise-card" data-lift="${escapeHtml(lift.name)}" data-prescribed="${prescribedWeight || ''}">
+                <div class="exercise-card" data-lift="${escapeHtml(lift.lift)}" data-category="${escapeHtml(lift.category)}" data-prescribed="${prescribedWeight || ''}">
                     <div class="exercise-header">
-                        <span class="exercise-title">${escapeHtml(lift.name)}</span>
-                        <span class="exercise-meta">${lift.sets} Sets x ${lift.reps} Reps | Target: ${lift.vbt}</span>
+                        <div>
+                            <span class="exercise-title">${escapeHtml(lift.lift)}</span>
+                            <span class="cat-badge">${escapeHtml(lift.category)}</span>
+                        </div>
+                        <span class="exercise-meta">${lift.prescription} | Target: ${escapeHtml(lift.vbt)}</span>
                     </div>
                     <div>`;
                 
@@ -568,8 +598,8 @@
 
                 html += `
                     </div>
-                    <button type="button" class="rest-timer-btn" onclick="startRestTimer(${lift.rest}, this)">
-                        ⏱️ Start Rest Timer (${lift.rest}s) <span class="timer-display"></span>
+                    <button type="button" class="rest-timer-btn" onclick="startRestTimer(${lift.rest || 120}, this)">
+                        ⏱️ Start Rest Timer (${lift.rest || 120}s) <span class="timer-display"></span>
                     </button>
                 </div>`;
             });
@@ -596,18 +626,18 @@
                 display.textContent = `${remaining}s`;
                 if (remaining <= 0) {
                     clearInterval(timer);
-                    display.textContent = 'REST DONE! READY!';
+                    display.textContent = 'REST DONE!';
                     btn.disabled = false;
                 }
             }, 1000);
         }
 
-        // Submit All Completed Sets
         async function submitFullWorkout() {
             const name = document.getElementById('logName').value;
             const date = document.getElementById('logDate').value;
             const phase = document.getElementById('logPhase').value;
             const week = document.getElementById('logWeek').value;
+            const day = document.getElementById('logDay').value;
             const status = document.getElementById('workoutStatus');
 
             if (!name) {
@@ -618,6 +648,7 @@
             const setsToSubmit = [];
             document.querySelectorAll('.exercise-card').forEach(card => {
                 const liftName = card.getAttribute('data-lift');
+                const category = card.getAttribute('data-category');
                 const prescribedWeight = card.getAttribute('data-prescribed');
                 card.querySelectorAll('.set-row').forEach((row, idx) => {
                     const check = row.querySelector('.set-check').checked;
@@ -627,6 +658,7 @@
 
                     if (check || weight || vbt) {
                         setsToSubmit.push({
+                            category: category,
                             lift: liftName,
                             setNum: idx + 1,
                             targetReps: "",
@@ -656,7 +688,7 @@
                     method: 'POST',
                     body: JSON.stringify({
                         action: 'logFullWorkout',
-                        payload: { name, date, phase, week, sets: setsToSubmit }
+                        payload: { name, date, phase, week, day, sets: setsToSubmit }
                     })
                 });
                 const data = await res.json();
@@ -672,10 +704,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             loadAthletes();
-            renderWorkoutProgram();
+            fetchAndRenderWorkout();
         });
 
-        // Profile Form Submit
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('profileStatus');
@@ -709,7 +740,6 @@
             }
         });
 
-        // 3-Pt Test Form Submit
         document.getElementById('testingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const status = document.getElementById('testingStatus');
