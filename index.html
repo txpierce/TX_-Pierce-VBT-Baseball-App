@@ -315,7 +315,16 @@
                     </div>
                     <div class="form-group">
                         <label for="profWeek">Week</label>
-                        <input type="number" id="profWeek" min="1" max="24" value="1" required>
+                        <select id="profWeek" required>
+                            <option value="1">Week 1</option>
+                            <option value="2">Week 2</option>
+                            <option value="3">Week 3</option>
+                            <option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                            <option value="6">Week 6</option>
+                            <option value="7">Week 7</option>
+                            <option value="8">Week 8</option>
+                        </select>
                     </div>
                 </div>
                 <button type="submit">Create Profile & Sheet Tab</button>
@@ -410,7 +419,7 @@
                 </div>
             </div>
 
-            <!-- Phase, Week, and Day Selectors -->
+            <!-- Phase, Week Dropdown (1-8), and Day Selectors -->
             <div class="inline-group">
                 <div class="form-group">
                     <label for="logPhase">Phase</label>
@@ -423,7 +432,16 @@
                 </div>
                 <div class="form-group">
                     <label for="logWeek">Week</label>
-                    <input type="number" id="logWeek" min="1" max="24" value="1" onchange="fetchAndRenderWorkout()" required>
+                    <select id="logWeek" onchange="fetchAndRenderWorkout()" required>
+                        <option value="1">Week 1</option>
+                        <option value="2">Week 2</option>
+                        <option value="3">Week 3</option>
+                        <option value="4">Week 4</option>
+                        <option value="5">Week 5</option>
+                        <option value="6">Week 6</option>
+                        <option value="7">Week 7</option>
+                        <option value="8">Week 8</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="logDay">Day</label>
@@ -452,7 +470,7 @@
 
         let currentAthleteETMs = {};
 
-        document.getElementById('logDate').value = new Date().toISOString().split('T');
+        document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
 
         function switchTab(tabId, el) {
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
