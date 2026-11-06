@@ -250,10 +250,10 @@
             text-align: center;
         }
 
-        .weight-input {
-            font-weight: bold;
-            color: #0F172A;
-            background: #F8FAFC;
+        .weight-input::placeholder {
+            color: #94A3B8;
+            font-style: italic;
+            font-weight: 600;
         }
 
         .set-check {
@@ -614,7 +614,8 @@
 
             lifts.forEach((lift, liftIdx) => {
                 const etm = currentAthleteETMs[lift.lift] || 0;
-                const prescribedWeight = (etm > 0 && lift.pct > 0) ? Math.round(etm * lift.pct) : null;
+                const rawWeight = (etm > 0 && lift.pct > 0) ? (etm * lift.pct) : 0;
+                const prescribedWeight = rawWeight > 0 ? Math.round(rawWeight / 5) * 5 : null;
 
                 if (lift.sets === 0) {
                     html += `
@@ -662,7 +663,7 @@
                         <input type="checkbox" class="set-check" onchange="toggleSetRow(this)">
                         <span class="set-label">Set ${s}</span>
                         <div class="set-input-group">
-                            <input type="number" class="actual-weight weight-input" value="${prescribedWeight || ''}" placeholder="${prescribedWeight || 'Lbs'}">
+                            <input type="number" class="actual-weight weight-input" placeholder="${prescribedWeight ? prescribedWeight : 'Lbs'}">
                             <input type="number" step="0.01" class="actual-vbt" placeholder="e.g. 0.52">
                             <input type="number" class="actual-rpe" min="1" max="10" placeholder="1-10">
                         </div>
